@@ -1,56 +1,40 @@
-pragma solidity ^0.4.0;
+pragma solidity ^0.4.24;
 
 import "./baseauction.sol";
+import "./Withdrawable.sol";
 
-/*
-Simple time-based auction that declares winning bid after a specified number 
-of minutes has passed since contract creation
-*/
-contract TimerAuction is BaseAuction {
-    
+contract TimerAuction is BaseAuction, Withdrawable {
     string public item;
     uint public auctionEnd;
     address public maxBidder;
     uint public maxBid;
     bool public ended;
-    
-    event BidAccepted(address bidder, uint bid);
-    
-    function TimerAuction(string _item, uint _durationMinutes) {
+
+    constructor(string _item, uint _durationMinutes) public {
         item = _item;
         auctionEnd = now + (_durationMinutes * 1 minutes);
     }
-    
-    function bid() public payable {
-        //make sure auction hasnt already ended
+
+    function bid() external payable {
         require(now < auctionEnd);
-        //make sure bid is higher than current max
         require(msg.value > maxBid);
-        
-        //return the bid amount that got beat
-        if(maxBidder != 0){
-            //WARNING: THIS IS UNSAFE!
-            maxBidder.transfer(maxBid);
+
+        if (maxBidder != address(0)) {
+            pendingWithdrawals[maxBidder] += maxBid;
         }
-        
-	//update new max bidder
+
         maxBidder = msg.sender;
         maxBid = msg.value;
-        BidAccepted(maxBidder, maxBid);
+        emit BidAccepted(maxBidder, maxBid);
     }
-    
-    function end() public ownerOnly {
-        //make sure this function only called once
+
+    function end() public {
         require(!ended);
-        //make sure owner cant declare winner before time is up
         require(now >= auctionEnd);
-    
-        //set the flag
         ended = true;
-        //announce the winner
-        AuctionComplete(maxBidder, maxBid);
-        
-        //WARNING: THIS IS UNSAFE!
+
+        emit AuctionComplete(maxBidder, maxBid);
+
         owner.transfer(maxBid);
     }
 }
