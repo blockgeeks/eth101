@@ -1,6 +1,6 @@
 pragma solidity ^0.4.24;
 
-import "./baseauction.sol";
+import "./BaseAuction.sol";
 import "./Withdrawable.sol";
 
 contract TimerAuction is BaseAuction, Withdrawable {
@@ -28,7 +28,7 @@ contract TimerAuction is BaseAuction, Withdrawable {
         emit BidAccepted(maxBidder, maxBid);
     }
 
-    function end() public {
+    function end() external ownerOnly {
         require(!ended);
         require(now >= auctionEnd);
         ended = true;
@@ -38,3 +38,4 @@ contract TimerAuction is BaseAuction, Withdrawable {
         owner.transfer(maxBid);
     }
 }
+

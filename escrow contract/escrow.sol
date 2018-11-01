@@ -1,8 +1,5 @@
 pragma solidity ^0.4.24;
 
-/*
-Simple escrow contract that mediates disputes using a trusted arbiter
-*/
 contract Escrow {
 
     enum State {AWAITING_PAYMENT, AWAITING_DELIVERY, COMPLETE, REFUNDED}
@@ -16,7 +13,7 @@ contract Escrow {
     address public seller;
     address public arbiter;
 
-    constructor (address _buyer, address _seller, address _arbiter) public {
+    constructor(address _buyer, address _seller, address _arbiter) public {
         buyer = _buyer;
         seller = _seller;
         arbiter = _arbiter;

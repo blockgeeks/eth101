@@ -5,10 +5,9 @@ contract Withdrawable {
 
     function withdraw() public returns(bool) {
         uint amount = pendingWithdrawals[msg.sender];
-        if (amount > 0) {
-            pendingWithdrawals[msg.sender] = 0;
-            msg.sender.transfer(amount);
-        }
-        return true;
+        require(amount > 0);
+
+        pendingWithdrawals[msg.sender] = 0;
+        msg.sender.transfer(amount);
     }
 }

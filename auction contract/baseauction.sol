@@ -1,8 +1,6 @@
 pragma solidity ^0.4.24;
 
-import "./auction.sol";
-
-contract BaseAuction is Auction {
+contract BaseAuction {
 
     address public owner;
 
@@ -17,4 +15,7 @@ contract BaseAuction is Auction {
     constructor() public {
         owner = msg.sender;
     }
+
+    function bid() external payable;
+    function end() external;
 }
